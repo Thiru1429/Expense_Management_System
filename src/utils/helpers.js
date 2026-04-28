@@ -36,10 +36,15 @@ export const generateId = () => uuidv4();
 // ─── Date filter helpers ──────────────────────────────────────────────────────
 export const filterByDays = (items, days, dateField = 'date') => {
   if (!days) return items;
-  const cutoff = subDays(new Date(), days);
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Start of today
+  const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + days - 1); // End of N days (today is day 1)
+  end.setHours(23, 59, 59, 999);
+
   return items.filter((item) => {
     try {
-      return isAfter(parseISO(item[dateField]), cutoff);
+      const d = parseISO(item[dateField]);
+      return d >= start && d <= end;
     } catch {
       return true;
     }

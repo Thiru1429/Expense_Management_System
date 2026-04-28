@@ -184,7 +184,12 @@ const Payment = () => {
                 className="input-field"
                 placeholder="Enter the actual amount paid"
                 value={paidAmount}
-                onChange={(event) => setPaidAmount(event.target.value)}
+                onChange={(event) => {
+                  const val = event.target.value;
+                  if (val.length <= 12) {
+                    setPaidAmount(val);
+                  }
+                }}
               />
               <p style={{ fontSize: '11.5px', color: '#94a3b8', marginTop: '5px' }}>
                 If the market rate is lower than budget it shows savings. If higher it shows overrun.

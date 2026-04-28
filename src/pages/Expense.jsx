@@ -5,7 +5,7 @@ import { useExpense } from '../context/ExpenseContext';
 import Table from '../components/Table';
 import { formatCurrency, formatDate, TYPE_COLORS, EXPENSE_TYPES, getPaymentDateKey } from '../utils/helpers';
 
-const STATUS_OPTIONS = ['All', 'paid', 'exceeded', 'savings', 'partial'];
+const STATUS_OPTIONS = ['All', 'paid', 'exceeded', 'savings'];
 const STATUS_LABELS  = { paid: 'Fully Paid', exceeded: 'Exceeded', savings: 'Savings', partial: 'Savings' }; // 'partial' kept for backward compat
 const STATUS_BADGE   = { paid: 'badge-success', exceeded: 'badge-danger', savings: 'badge-success', partial: 'badge-success' };
 
@@ -30,7 +30,8 @@ const Expense = () => {
       const matchDesc   = !descSearch.trim() || p.description.toLowerCase().includes(descSearch.toLowerCase());
       const matchDate   = !dateFilter || getPaymentDateKey(p) === dateFilter;
       const matchType   = typeFilter === 'All' || p.type === typeFilter;
-      const matchStatus = statusFilter === 'All' || p.status === statusFilter;
+      const matchStatus = statusFilter === 'All' || 
+                          (statusFilter === 'savings' ? (p.status === 'savings' || p.status === 'partial') : p.status === statusFilter);
       return matchDesc && matchDate && matchType && matchStatus;
     });
   }, [payments, descSearch, dateFilter, typeFilter, statusFilter]);

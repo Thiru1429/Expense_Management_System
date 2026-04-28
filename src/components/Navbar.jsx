@@ -10,7 +10,6 @@ import {
   X,
   TrendingUp,
   TrendingDown,
-  ChevronDown,
   Wallet,
   Receipt,
   CheckCircle2,
@@ -563,12 +562,9 @@ const Navbar = ({ sidebarOpen, onToggleSidebar, isMobile }) => {
             E
           </div>
           {!isMobile && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-              <span style={{ fontSize: '12.5px', fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap' }}>
-                Admin
-              </span>
-              <ChevronDown size={11} color="#94a3b8" />
-            </div>
+            <span style={{ fontSize: '12.5px', fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap' }}>
+              Admin
+            </span>
           )}
         </div>
       </div>

@@ -34,9 +34,16 @@ const Budget = () => {
 
   const validate = () => {
     const nextErrors = {};
-    if (!form.description.trim()) nextErrors.description = 'Description is required.';
+    if (!form.description.trim()) {
+      nextErrors.description = 'Description is required.';
+    } else if (/[0-9]/.test(form.description)) {
+      nextErrors.description = 'Numbers are not allowed. Use letters only.';
+    }
+
     if (!form.amount || isNaN(form.amount) || Number(form.amount) <= 0) {
       nextErrors.amount = 'Enter a valid positive amount.';
+    } else if (form.amount.toString().length > 12) {
+      nextErrors.amount = 'Amount is too large (maximum 12 digits).';
     }
     if (!form.date) nextErrors.date = 'Date is required.';
     if (form.date && form.date < TODAY_STR) {
@@ -284,7 +291,10 @@ const Budget = () => {
               className="input-field"
               placeholder="e.g. Office Supplies, Flight Ticket"
               value={form.description}
-              onChange={(event) => setForm({ ...form, description: event.target.value })}
+              onChange={(event) => {
+                const val = event.target.value.replace(/[0-9]/g, '');
+                setForm({ ...form, description: val });
+              }}
             />
             {errors.description && <p className="form-error">{errors.description}</p>}
           </div>
@@ -321,7 +331,12 @@ const Budget = () => {
               className="input-field"
               placeholder="Enter budget amount"
               value={form.amount}
-              onChange={(event) => setForm({ ...form, amount: event.target.value })}
+              onChange={(event) => {
+                const val = event.target.value;
+                if (val.length <= 12) {
+                  setForm({ ...form, amount: val });
+                }
+              }}
             />
             {errors.amount && <p className="form-error">{errors.amount}</p>}
           </div>

@@ -24,7 +24,7 @@ const ChartTip = ({ active, payload, label }) => {
   );
 };
 
-const COLORS     = { Office: '#4f46e5', Travel: '#7c3aed', Misc: '#d97706' };
+const COLORS = { Office: '#4f46e5', Travel: '#7c3aed', Misc: '#d97706' };
 const PIE_COLORS = ['#4f46e5', '#7c3aed', '#d97706'];
 
 /* ── Progress bar row ──────────────────────────────────────── */
@@ -75,7 +75,7 @@ const Report = () => {
   const byType = EXPENSE_TYPES.map((type) => ({
     type,
     budget: budgets.filter((b) => b.type === type).reduce((s, b) => s + b.amount, 0),
-    spent:  payments.filter((p) => p.type === type).reduce((s, p) => s + p.paidAmount, 0),
+    spent: payments.filter((p) => p.type === type).reduce((s, p) => s + p.paidAmount, 0),
   }));
 
   const pieData = byType
@@ -85,26 +85,26 @@ const Report = () => {
   const utilizationPct = stats.totalBudget
     ? Math.min(Math.round((stats.totalExpenses / stats.totalBudget) * 100), 100)
     : 0;
-  const utilColor    = utilizationPct > 90 ? '#dc2626' : utilizationPct > 70 ? '#d97706' : '#16a34a';
+  const utilColor = utilizationPct > 90 ? '#dc2626' : utilizationPct > 70 ? '#d97706' : '#16a34a';
   const utilGradient = utilizationPct > 90
     ? 'linear-gradient(90deg,#dc2626,#f87171)'
     : utilizationPct > 70
-    ? 'linear-gradient(90deg,#d97706,#fbbf24)'
-    : 'linear-gradient(90deg,#16a34a,#4ade80)';
+      ? 'linear-gradient(90deg,#d97706,#fbbf24)'
+      : 'linear-gradient(90deg,#16a34a,#4ade80)';
 
-  const paidCount     = payments.filter((p) => p.status === 'paid').length;
+  const paidCount = payments.filter((p) => p.status === 'paid').length;
   const exceededCount = payments.filter((p) => p.status === 'exceeded').length;
-  const savingsCount  = payments.filter((p) => p.status === 'savings' || p.status === 'partial').length;
+  const savingsCount = payments.filter((p) => p.status === 'savings' || p.status === 'partial').length;
 
   return (
     <div className="animate-fade-in">
 
       {/* ══ KPI ROW ════════════════════════════════════════════ */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(190px,1fr))', gap: '16px', marginBottom: '24px' }}>
-        <Card title="Total Expenses"  value={formatCurrency(stats.totalExpenses)}  icon={TrendingDown}  color="purple" />
-        <Card title="Total Exceeded"  value={formatCurrency(stats.totalExceeded)}  icon={AlertTriangle} color="red"    />
-        <Card title="Total Savings"   value={formatCurrency(stats.totalSavings)}   icon={PiggyBank}     color="green"  />
-        <Card title="Budget Balance"  value={formatCurrency(stats.remainingBalance)} icon={BarChart3}  color={stats.remainingBalance >= 0 ? 'green' : 'red'} />
+        <Card title="Total Expenses" value={formatCurrency(stats.totalExpenses)} icon={TrendingDown} color="purple" />
+        <Card title="Total Exceeded" value={formatCurrency(stats.totalExceeded)} icon={AlertTriangle} color="red" />
+        <Card title="Total Savings" value={formatCurrency(stats.totalSavings)} icon={PiggyBank} color="green" />
+        <Card title="Budget Balance" value={formatCurrency(stats.remainingBalance)} icon={BarChart3} color={stats.remainingBalance >= 0 ? 'green' : 'red'} />
       </div>
 
       {/* ══ UTILIZATION BANNER ════════════════════════════════ */}
@@ -138,7 +138,7 @@ const Report = () => {
 
         {/* Scale labels */}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
-          {['0%','25%','50%','75%','100%'].map(l => (
+          {['0%', '25%', '50%', '75%', '100%'].map(l => (
             <span key={l} style={{ fontSize: '10.5px', color: '#94a3b8', fontWeight: 500 }}>{l}</span>
           ))}
         </div>
@@ -163,10 +163,10 @@ const Report = () => {
             <BarChart data={byType} barCategoryGap="30%" barGap={4} margin={{ left: -4, right: 4 }}>
               <CartesianGrid stroke="#f1f5f9" vertical={false} />
               <XAxis dataKey="type" tick={{ fontSize: 13, fill: '#64748b', fontWeight: 500 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${v/1000}k`} width={46} />
+              <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${v / 1000}k`} width={46} />
               <Tooltip content={<ChartTip />} cursor={{ fill: 'rgba(79,70,229,0.04)' }} />
               <Bar dataKey="budget" name="Budgeted" radius={[5, 5, 0, 0]} fill="#e0e7ff" maxBarSize={36} />
-              <Bar dataKey="spent"  name="Spent"    radius={[5, 5, 0, 0]} maxBarSize={36}>
+              <Bar dataKey="spent" name="Spent" radius={[5, 5, 0, 0]} maxBarSize={36}>
                 {byType.map((e) => <Cell key={e.type} fill={COLORS[e.type]} />)}
               </Bar>
             </BarChart>
@@ -235,9 +235,9 @@ const Report = () => {
             <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#0f172a', marginBottom: '14px' }}>Payment Status</div>
 
             {[
-              { label: 'Fully Paid', count: paidCount,     icon: CheckCircle2, color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
-              { label: 'Exceeded',   count: exceededCount, icon: AlertTriangle,color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
-              { label: '💰 Savings', count: savingsCount,  icon: PiggyBank,    color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
+              { label: 'Fully Paid', count: paidCount, icon: CheckCircle2, color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
+              { label: 'Exceeded', count: exceededCount, icon: AlertTriangle, color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
+              { label: '💰 Savings', count: savingsCount, icon: PiggyBank, color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
             ].map((s) => {
               const Icon = s.icon;
               return (

@@ -8,6 +8,7 @@ const DAY_FILTERS = [
   { label: '1 Day',   value: 1 },
   { label: '3 Days',  value: 3 },
   { label: '7 Days',  value: 7 },
+  { label: '15 Days', value: 15 },
   { label: '30 Days', value: 30 },
   { label: 'All',     value: null },
 ];

@@ -60,7 +60,7 @@ export function computeRecurringBudgets(budgets, payments) {
       if (isAfter(nextDate, today)) break;
 
       const cycleMonth = format(nextDate, 'yyyy-MM');
-      const cycleKey   = `${rootId}::${cycleMonth}`;
+      const cycleKey = `${rootId}::${cycleMonth}`;
 
       // Already generated for this cycle → skip
       if (existingCycles.has(cycleKey)) {
@@ -87,15 +87,15 @@ export function computeRecurringBudgets(budgets, payments) {
 
       // Create the new budget for the next month
       const newEntry = {
-        id:              generateId(),
-        date:            format(nextDate, 'yyyy-MM-dd'),
-        description:     b.description,
-        type:            b.type,
-        amount:          b.amount,
-        repeat:          'monthly',
+        id: generateId(),
+        date: format(nextDate, 'yyyy-MM-dd'),
+        description: b.description,
+        type: b.type,
+        amount: b.amount,
+        repeat: 'monthly',
         generatedFromId: rootId,
         cycleMonth,
-        createdAt:       new Date().toISOString(),
+        createdAt: new Date().toISOString(),
       };
 
       newEntries.push(newEntry);

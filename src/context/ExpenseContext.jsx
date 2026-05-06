@@ -44,7 +44,7 @@ const reducer = (state, action) => {
       const alreadyExists = state.budgets.some(
         (b) =>
           b.generatedFromId === action.payload.generatedFromId &&
-          b.cycleMonth      === action.payload.cycleMonth
+          b.cycleMonth === action.payload.cycleMonth
       );
       if (alreadyExists) return state;
       return { ...state, budgets: [action.payload, ...state.budgets] };
@@ -124,13 +124,13 @@ export const ExpenseProvider = ({ children }) => {
       });
     }
     recurringProcessed.current = true;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.payments]);
 
   // ─── Derived stats ────────────────────────────────────────────────────────
   const totalBudget = state.budgets.reduce((sum, b) => sum + b.amount, 0);
   const totalExpenses = state.payments.reduce((sum, p) => sum + p.paidAmount, 0);
-  
+
   // Calculate category-level net savings/exceeded
   const categories = ['Office', 'Travel', 'Misc'];
   let totalExceeded = 0;
@@ -138,8 +138,8 @@ export const ExpenseProvider = ({ children }) => {
 
   categories.forEach(type => {
     const catBudget = state.budgets.filter(b => b.type === type).reduce((sum, b) => sum + b.amount, 0);
-    const catSpent  = state.payments.filter(p => p.type === type).reduce((sum, p) => sum + p.paidAmount, 0);
-    
+    const catSpent = state.payments.filter(p => p.type === type).reduce((sum, p) => sum + p.paidAmount, 0);
+
     if (catSpent > catBudget) {
       totalExceeded += (catSpent - catBudget);
     } else {

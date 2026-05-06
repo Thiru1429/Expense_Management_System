@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Trash2, SlidersHorizontal, X } from 'lucide-react';
+import Modal from '../components/Modal';
 import { useExpense } from '../context/ExpenseContext';
 import Table from '../components/Table';
 import { formatCurrency, formatDate, TYPE_COLORS, EXPENSE_TYPES, getPaymentDateKey } from '../utils/helpers';
@@ -18,6 +19,7 @@ const Expense = () => {
   const [typeFilter,   setTypeFilter]   = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
   const [showFilters,  setShowFilters]  = useState(false);
+  const [viewItem,    setViewItem]     = useState(null);
 
   // Sync descSearch when URL ?q= changes
   useEffect(() => {
@@ -112,7 +114,10 @@ const Expense = () => {
         <button
           className="btn-danger"
           style={{ padding: '5px 9px' }}
-          onClick={() => handleDelete(id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDelete(id);
+          }}
         >
           <Trash2 size={12} />
         </button>
@@ -259,7 +264,59 @@ const Expense = () => {
         columns={columns}
         data={filtered}
         emptyMessage="No expense records match the selected filters."
+        onRowClick={(item) => setViewItem(item)}
       />
+
+      {/* ── Detail Modal ────────────────────────────── */}
+      <Modal isOpen={!!viewItem} onClose={() => setViewItem(null)} title="Transaction Details">
+        {viewItem && (
+          <div className="modal-body">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
+                <div style={{ fontSize: '12px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Description</div>
+                <div style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a' }}>{viewItem.description}</div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Actual Paid</div>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#16a34a' }}>{formatCurrency(viewItem.paidAmount)}</div>
+                </div>
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Budgeted</div>
+                  <div style={{ fontSize: '15px', fontWeight: 700, color: '#64748b' }}>{formatCurrency(viewItem.actualAmount)}</div>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Category</div>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>{viewItem.type}</div>
+                </div>
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Date</div>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>{formatDate(getPaymentDateKey(viewItem))}</div>
+                </div>
+              </div>
+
+              {viewItem.exceededAmount > 0 ? (
+                <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px', padding: '16px' }}>
+                  <div style={{ fontSize: '11px', color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Over Budget By</div>
+                  <div style={{ fontSize: '16px', fontWeight: 800, color: '#dc2626' }}>{formatCurrency(viewItem.exceededAmount)}</div>
+                </div>
+              ) : viewItem.savings > 0 ? (
+                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '16px' }}>
+                  <div style={{ fontSize: '11px', color: '#16a34a', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Savings Achieved</div>
+                  <div style={{ fontSize: '16px', fontWeight: 800, color: '#16a34a' }}>{formatCurrency(viewItem.savings)}</div>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        )}
+        <div className="modal-footer">
+          <button className="btn-primary" onClick={() => setViewItem(null)}>Close</button>
+        </div>
+      </Modal>
 
       {filtered.length > 0 && (
         <div

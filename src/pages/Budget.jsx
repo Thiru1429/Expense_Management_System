@@ -22,6 +22,7 @@ const Budget = () => {
   const { budgets, payments, dispatch } = useExpense();
   const [searchParams] = useSearchParams();
   const [modal, setModal] = useState(false);
+  const [viewItem, setViewItem] = useState(null);
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
   const [filter, setFilter] = useState('All');
@@ -186,7 +187,10 @@ const Budget = () => {
         <button
           className="btn-danger"
           style={{ padding: '5px 10px', fontSize: '12px' }}
-          onClick={() => handleDelete(id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDelete(id);
+          }}
         >
           <Trash2 size={12} /> Delete
         </button>
@@ -267,8 +271,48 @@ const Budget = () => {
       <Table
         columns={columns}
         data={filtered}
-        emptyMessage="No budget entries. Click 'Add Budget' to create one."
+        emptyMessage={textSearch ? `No budgets match "${textSearch}"` : "No budget entries. Click 'Add Budget' to create one."}
+        onRowClick={(item) => setViewItem(item)}
       />
+
+      {/* ── Detail Modal ────────────────────────────── */}
+      <Modal isOpen={!!viewItem} onClose={() => setViewItem(null)} title="Budget Details">
+        {viewItem && (
+          <div className="modal-body">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
+                <div style={{ fontSize: '12px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Description</div>
+                <div style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a' }}>{viewItem.description}</div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Amount</div>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#4f46e5' }}>{formatCurrency(viewItem.amount)}</div>
+                </div>
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Category</div>
+                  <div style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a' }}>{viewItem.type}</div>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Frequency</div>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#7c3aed' }}>{viewItem.repeat === 'monthly' ? 'Monthly Recurring' : 'One-time'}</div>
+                </div>
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Date</div>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>{formatDate(viewItem.date)}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        <div className="modal-footer">
+          <button className="btn-primary" onClick={() => setViewItem(null)}>Close</button>
+        </div>
+      </Modal>
 
       <Modal isOpen={modal} onClose={closeModal} title="Add Budget Entry">
         <div className="modal-body">

@@ -1,6 +1,6 @@
 import { Inbox } from 'lucide-react';
 
-const Table = ({ columns, data, emptyMessage = 'No records found.' }) => {
+const Table = ({ columns, data, emptyMessage = 'No records found.', onRowClick }) => {
   return (
     <div className="table-container">
       <div style={{ overflowX: 'auto' }}>
@@ -32,7 +32,11 @@ const Table = ({ columns, data, emptyMessage = 'No records found.' }) => {
               </tr>
             ) : (
               data.map((row, i) => (
-                <tr key={row.id ?? i}>
+                <tr
+                  key={row.id ?? i}
+                  onClick={() => onRowClick && onRowClick(row)}
+                  style={{ cursor: onRowClick ? 'pointer' : 'default' }}
+                >
                   {columns.map((col) => (
                     <td key={col.key}>
                       {col.render ? col.render(row[col.key], row) : row[col.key]}

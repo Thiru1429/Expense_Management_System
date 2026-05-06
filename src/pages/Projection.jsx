@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Trash2, RefreshCw, Calendar, Eye, TrendingUp } from 'lucide-react';
+import Modal from '../components/Modal';
 import { useExpense } from '../context/ExpenseContext';
 import Table from '../components/Table';
 import { formatCurrency, formatDate, TYPE_COLORS, filterByDays } from '../utils/helpers';
@@ -17,6 +18,7 @@ const Projection = () => {
   const { budgets, dispatch } = useExpense();
   const [dayFilter,  setDayFilter]  = useState(null);
   const [typeFilter, setTypeFilter] = useState('All');
+  const [viewItem,   setViewItem]   = useState(null);
 
   const handleDelete = (id) => {
     if (confirm('Remove this budget from projection?')) {
@@ -81,7 +83,10 @@ const Projection = () => {
         <button
           className="btn-danger"
           style={{ padding: '5px 10px', fontSize: '12px' }}
-          onClick={() => handleDelete(id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDelete(id);
+          }}
         >
           <Trash2 size={12} /> Remove
         </button>
@@ -187,7 +192,47 @@ const Projection = () => {
         columns={columns}
         data={filtered}
         emptyMessage="No budget entries match the selected filters."
+        onRowClick={(item) => setViewItem(item)}
       />
+
+      {/* ── Detail Modal ────────────────────────────── */}
+      <Modal isOpen={!!viewItem} onClose={() => setViewItem(null)} title="Projection Details">
+        {viewItem && (
+          <div className="modal-body">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
+                <div style={{ fontSize: '12px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Description</div>
+                <div style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a' }}>{viewItem.description}</div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Projected Amount</div>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#4f46e5' }}>{formatCurrency(viewItem.amount)}</div>
+                </div>
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Category</div>
+                  <div style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a' }}>{viewItem.type}</div>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Frequency</div>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#7c3aed' }}>{viewItem.repeat === 'monthly' ? 'Monthly Recurring' : 'One-time'}</div>
+                </div>
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Projection Date</div>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>{formatDate(viewItem.date)}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        <div className="modal-footer">
+          <button className="btn-primary" onClick={() => setViewItem(null)}>Close</button>
+        </div>
+      </Modal>
 
       {filtered.length > 0 && (
         <div style={{ marginTop: '10px', textAlign: 'right', fontSize: '12px', color: '#94a3b8' }}>

@@ -127,10 +127,16 @@ const Payment = () => {
 
       {filteredPending.length === 0 ? (
         <div className="enterprise-card" style={{ padding: '36px 20px', textAlign: 'center', marginBottom: '28px' }}>
-          <CheckCircle2 size={38} color="#16a34a" style={{ margin: '0 auto 10px', display: 'block' }} />
-          <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>All budgets are paid!</div>
+          {pendingBudgets.length > 0 ? (
+            <Search size={38} color="#94a3b8" style={{ margin: '0 auto 10px', display: 'block' }} />
+          ) : (
+            <CheckCircle2 size={38} color="#16a34a" style={{ margin: '0 auto 10px', display: 'block' }} />
+          )}
+          <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>
+            {pendingBudgets.length > 0 ? 'No matches found' : 'All budgets are paid!'}
+          </div>
           <div style={{ fontSize: '12.5px', color: '#94a3b8', marginTop: '4px' }}>
-            {search ? 'No pending budgets match your search.' : 'Add new budgets from the Budget page.'}
+            {search ? `No pending budgets match "${search}"` : 'Add new budgets from the Budget page.'}
           </div>
         </div>
       ) : (

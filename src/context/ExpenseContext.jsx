@@ -130,9 +130,23 @@ export const ExpenseProvider = ({ children }) => {
   // ─── Derived stats ────────────────────────────────────────────────────────
   const totalBudget = state.budgets.reduce((sum, b) => sum + b.amount, 0);
   const totalExpenses = state.payments.reduce((sum, p) => sum + p.paidAmount, 0);
-  const totalExceeded = state.payments.reduce((sum, p) => sum + p.exceededAmount, 0);
-  // backward-compat: old records used 'remainingBalance', new records use 'savings'
-  const totalSavings  = state.payments.reduce((sum, p) => sum + (p.savings ?? p.remainingBalance ?? 0), 0);
+  
+  // Calculate category-level net savings/exceeded
+  const categories = ['Office', 'Travel', 'Misc'];
+  let totalExceeded = 0;
+  let totalSavings = 0;
+
+  categories.forEach(type => {
+    const catBudget = state.budgets.filter(b => b.type === type).reduce((sum, b) => sum + b.amount, 0);
+    const catSpent  = state.payments.filter(p => p.type === type).reduce((sum, p) => sum + p.paidAmount, 0);
+    
+    if (catSpent > catBudget) {
+      totalExceeded += (catSpent - catBudget);
+    } else {
+      totalSavings += (catBudget - catSpent);
+    }
+  });
+
   const remainingBalance = totalBudget - totalExpenses;
 
   const value = {

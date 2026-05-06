@@ -243,13 +243,13 @@ const Dashboard = () => {
           </div>
 
           <div style={{ marginTop: '16px', padding: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', display: 'flex', justifyContent: 'space-between' }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '3px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Savings</div>
+            <div style={{ textAlign: 'center', flex: 1 }}>
+              <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '3px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Net Savings</div>
               <div style={{ fontSize: '15px', fontWeight: 800, color: '#16a34a' }}>{formatCurrency(stats.totalSavings)}</div>
             </div>
             <div style={{ width: '1px', background: '#e2e8f0' }} />
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '3px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Exceeded</div>
+            <div style={{ textAlign: 'center', flex: 1 }}>
+              <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '3px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Net Exceeded</div>
               <div style={{ fontSize: '15px', fontWeight: 800, color: '#dc2626' }}>{formatCurrency(stats.totalExceeded)}</div>
             </div>
           </div>

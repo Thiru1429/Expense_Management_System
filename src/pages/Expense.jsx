@@ -4,7 +4,7 @@ import { Trash2, SlidersHorizontal, X } from 'lucide-react';
 import Modal from '../components/Modal';
 import { useExpense } from '../context/ExpenseContext';
 import Table from '../components/Table';
-import { formatCurrency, formatDate, TYPE_COLORS, EXPENSE_TYPES, getPaymentDateKey } from '../utils/helpers';
+import { formatCurrency, formatDate, TYPE_COLORS, EXPENSE_TYPES, getPaymentDateKey, getSavingsValue } from '../utils/helpers';
 
 const STATUS_OPTIONS = ['All', 'paid', 'exceeded', 'savings'];
 const STATUS_LABELS  = { paid: 'Fully Paid', exceeded: 'Exceeded', savings: 'Savings', partial: 'Savings' }; // 'partial' kept for backward compat
@@ -46,6 +46,7 @@ const Expense = () => {
 
   const totalPaid     = filtered.reduce((s, p) => s + p.paidAmount, 0);
   const totalExceeded = filtered.reduce((s, p) => s + p.exceededAmount, 0);
+  const totalSavings  = filtered.reduce((s, p) => s + getSavingsValue(p), 0);
   const hasActiveFilters = descSearch || dateFilter || typeFilter !== 'All' || statusFilter !== 'All';
 
   const clearFilters = () => {
@@ -91,8 +92,7 @@ const Expense = () => {
       key: 'savings',
       label: '💰 Savings',
       render: (_, row) => {
-        // backward compat: old records stored in remainingBalance, new in savings
-        const val = (row.savings ?? row.remainingBalance ?? 0);
+        const val = getSavingsValue(row);
         return val > 0
           ? <span style={{ color: '#16a34a', fontWeight: 700 }}>{formatCurrency(val)}</span>
           : <span style={{ color: '#94a3b8' }}>—</span>;
@@ -142,6 +142,7 @@ const Expense = () => {
           { label: 'Transactions', val: filtered.length,             badge: 'badge-info' },
           { label: 'Total Paid',   val: formatCurrency(totalPaid),   badge: 'badge-success' },
           { label: 'Total Exceeded', val: formatCurrency(totalExceeded), badge: 'badge-danger' },
+          { label: 'Total Savings',  val: formatCurrency(totalSavings), badge: 'badge-success' },
         ].map((s) => (
           <div
             key={s.label}
@@ -304,10 +305,10 @@ const Expense = () => {
                   <div style={{ fontSize: '11px', color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Over Budget By</div>
                   <div style={{ fontSize: '16px', fontWeight: 800, color: '#dc2626' }}>{formatCurrency(viewItem.exceededAmount)}</div>
                 </div>
-              ) : viewItem.savings > 0 ? (
+              ) : getSavingsValue(viewItem) > 0 ? (
                 <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '16px' }}>
                   <div style={{ fontSize: '11px', color: '#16a34a', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px', fontWeight: 600 }}>Savings Achieved</div>
-                  <div style={{ fontSize: '16px', fontWeight: 800, color: '#16a34a' }}>{formatCurrency(viewItem.savings)}</div>
+                  <div style={{ fontSize: '16px', fontWeight: 800, color: '#16a34a' }}>{formatCurrency(getSavingsValue(viewItem))}</div>
                 </div>
               ) : null}
             </div>

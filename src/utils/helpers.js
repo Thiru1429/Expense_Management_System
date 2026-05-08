@@ -30,6 +30,11 @@ export const getPaymentDateKey = (payment) => {
   }
 };
 
+export const getSavingsValue = (payment) => {
+  if (!payment) return 0;
+  return payment.savings ?? payment.remainingBalance ?? 0;
+};
+
 // ─── ID generator ────────────────────────────────────────────────────────────
 export const generateId = () => uuidv4();
 
